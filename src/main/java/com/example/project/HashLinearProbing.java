@@ -4,28 +4,27 @@ import java.util.Random;
 
 public class HashLinearProbing {
     private int hsize; // tamano de la tabla hash
-    private Integer[] buckets; // array que representa la tabla hash
-    private Integer AVAILABLE;
+    private Persona[] buckets; // array que representa la tabla hash
+    private String AVAILABLE;
     private int size; // cantidad de elementos en la tabla hash
 
     public HashLinearProbing(int hsize) {
-        this.buckets = new Integer[hsize];
+        this.buckets = new Persona[hsize];
         this.hsize = hsize;
-        this.AVAILABLE = Integer.MIN_VALUE;
+        this.AVAILABLE = "";
         this.size = 0;
     }
 
-    public int hashing(int key) {
-        int hash = key % hsize;
-        if (hash < 0) {
-            hash += hsize;
-        }
+    public int hashing(String key) {
+        int hash = convertToInt(key);
+        hash = hash % 100;
         return hash;
     }
 
-    public void insertHash(int key) {
-        Integer wrappedInt = key;
-        int hash = hashing(key);
+    public void insertHash(Persona persona) {
+        Persona wrappedPersona = persona;
+        int hash = hashing(persona.DNI);
+        System.out.println(hash);
 
         if (isFull()) {
             System.out.println("Tabla hash esta llena!");
@@ -33,8 +32,8 @@ public class HashLinearProbing {
         }
 
         for (int i = 0; i < hsize; i++) {
-            if (buckets[hash] == null || buckets[hash] == AVAILABLE) {
-                buckets[hash] = wrappedInt;
+            if (buckets[hash] == null || buckets[hash].DNI.equals(AVAILABLE)) {
+                buckets[hash] = wrappedPersona;
                 size++;
                 return;
             }
@@ -47,8 +46,8 @@ public class HashLinearProbing {
         }
     }
 
-    public void deleteHash(int key) {
-        Integer wrappedInt = key;
+    public void deleteHash(String key) {
+        String wrappedKey = key;
         int hash = hashing(key);
 
         if (isEmpty()) {
@@ -57,8 +56,8 @@ public class HashLinearProbing {
         }
 
         for (int i = 0; i < hsize; i++) {
-            if (buckets[hash] != null && buckets[hash].equals(wrappedInt)) {
-                buckets[hash] = AVAILABLE;
+            if (buckets[hash] != null && buckets[hash].DNI.equals(wrappedKey)) {
+                buckets[hash].DNI = AVAILABLE;
                 size--;
                 return;
             }
@@ -74,7 +73,7 @@ public class HashLinearProbing {
 
     public void displayHashtable() {
         for (int i = 0; i < hsize; i++) {
-            if (buckets[i] == null || buckets[i] == AVAILABLE) {
+            if (buckets[i] == null || buckets[i].DNI.equals(AVAILABLE)) {
                 System.out.println("Celda " + i + ": Vacia");
             } else {
                 System.out.println("Celda " + i + ": " + buckets[i].toString());
@@ -82,8 +81,8 @@ public class HashLinearProbing {
         }
     }
 
-    public int findHash(int key) {
-        Integer wrappedInt = key;
+    public int findHash(String key) {
+        String wrappedKey = key;
         int hash = hashing(key);
 
         if (isEmpty()) {
@@ -93,8 +92,8 @@ public class HashLinearProbing {
 
         for (int i = 0; i < hsize; i++) {
             try {
-                if (buckets[hash].equals(wrappedInt)) {
-                    buckets[hash] = AVAILABLE;
+                if (buckets[hash].DNI.equals(wrappedKey)) {
+                    buckets[hash].DNI = AVAILABLE;
                     return hash;
                 }
             } catch (Exception E) {
@@ -124,16 +123,25 @@ public class HashLinearProbing {
         }
         return response;
     }
+    
+    //Métodos añadidos
 
-    public static void main (String[] args){
-        HashLinearProbing tb = new HashLinearProbing(10);
-
-        Random rd = new Random();
-
-        for(int i = 0; i < 5; i++){
-            tb.insertHash(rd.nextInt(100));
+    private int convertToInt(String s) {
+        int [] valoresInt= new int [s.length()]; 
+        int sInt = 0;
+        for (int i = 0; i < valoresInt.length; i++) {
+            valoresInt [i] = Integer.valueOf(s.charAt(i));
+            sInt = sInt + (valoresInt[i]*i);
         }
+        return sInt;
+    }
 
-        tb.displayHashtable();        
+    public int size() {
+        return this.size;
+    }
+
+    public String getName(int index) {
+        if(this.buckets[index].nombre == null) return null;
+        return this.buckets[index].nombre;
     }
 }
